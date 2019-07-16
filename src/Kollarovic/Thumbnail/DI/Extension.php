@@ -3,6 +3,7 @@
 namespace Kollarovic\Thumbnail\DI;
 
 use Nette;
+use Tracy\Helpers;
 
 
 if (!class_exists('Nette\DI\CompilerExtension')) {
@@ -31,11 +32,16 @@ class Extension extends Nette\DI\CompilerExtension
 
 	public function loadConfiguration()
 	{
-		$config = $this->getConfig($this->defaults);
+		$config = $this->getConfig();
+
+		$config = Nette\Schema\Helpers::merge($this->defaults, $config);
+
+		$config = Nette\DI\Helpers::expand($config, $this->getContainerBuilder()->parameters);
+
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition($this->prefix('thumbnail'))
-			->setClass('Kollarovic\Thumbnail\Generator', array(
+			->setFactory('Kollarovic\Thumbnail\Generator', array(
 				'wwwDir' => $config['wwwDir'],
 				'httpRequest' => $config['httpRequest'],
 				'thumbPathMask' => $config['thumbPathMask'],
@@ -46,7 +52,7 @@ class Extension extends Nette\DI\CompilerExtension
 
 		if ($builder->hasDefinition('nette.latteFactory')) {
 			$definition = $builder->getDefinition('nette.latteFactory');
-			$definition->addSetup('addFilter', array($config['filterName'], array($this->prefix('@thumbnail'), 'thumbnail')));
+			$definition->getResultDefinition()->addSetup('addFilter', array($config['filterName'], array($this->prefix('@thumbnail'), 'thumbnail')));
 		}
 	}
 

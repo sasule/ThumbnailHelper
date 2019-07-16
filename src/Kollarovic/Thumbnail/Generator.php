@@ -3,7 +3,6 @@
 namespace Kollarovic\Thumbnail;
 
 use Nette;
-use Tracy\Debugger;
 
 
 /**
