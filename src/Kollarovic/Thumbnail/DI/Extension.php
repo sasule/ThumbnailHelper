@@ -34,7 +34,7 @@ class Extension extends Nette\DI\CompilerExtension
 	{
 		$config = $this->getConfig();
 
-		$config = Nette\Schema\Helpers::merge($this->defaults, $config);
+		$config = Nette\Schema\Helpers::merge($config, $this->defaults);
 
 		$config = Nette\DI\Helpers::expand($config, $this->getContainerBuilder()->parameters);
 
